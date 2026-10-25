@@ -23,21 +23,37 @@ build_dmg_for_arch() {
   rm -rf "$APP_PATH"
   npx electron-forge package --arch="$ARCH"
 
+  local SIGNING_ID="${APPLE_SIGNING_IDENTITY:--}"
+
   # 2. Prepare staging directory
   echo "[+] Setting up staging directory for ${ARCH}..."
   rm -rf "$STAGING_DIR"
   mkdir -p "$STAGING_DIR"
 
-  # 3. Copy ClassFlow.app
-  echo "[+] Copying ${APP_PATH}..."
-  cp -R "$APP_PATH" "$STAGING_DIR/ClassFlow.app"
+  # 3. Copy ClassFlow.app using Apple ditto (preserves Mach-O headers, symlinks and permissions)
+  echo "[+] Copying ${APP_PATH} via ditto..."
+  ditto "$APP_PATH" "$STAGING_DIR/ClassFlow.app"
 
   # 4. Fix permissions and ad-hoc sign inside staging
-  echo "[+] Ensuring permissions and ad-hoc signing..."
+  echo "[+] Ensuring execution permissions..."
   chmod -R u+w "$STAGING_DIR/ClassFlow.app"
   chmod -R a+rX "$STAGING_DIR/ClassFlow.app"
+  chmod +x "$STAGING_DIR/ClassFlow.app/Contents/MacOS/ClassFlow"
+  find "$STAGING_DIR/ClassFlow.app/Contents/Frameworks" -type f -perm +0111 -exec chmod +x {} + 2>/dev/null || true
+
+  # Strip quarantine flags before signing
   xattr -cr "$STAGING_DIR/ClassFlow.app" 2>/dev/null || true
-  codesign --force --deep --sign - "$STAGING_DIR/ClassFlow.app" 2>/dev/null || true
+
+  # Code sign all frameworks, helpers, and main bundle
+  echo "[+] Applying code signature (Identity: ${SIGNING_ID})..."
+  find "$STAGING_DIR/ClassFlow.app/Contents/Frameworks" -type f -name "*.dylib" -exec codesign --force --sign "$SIGNING_ID" {} + 2>/dev/null || true
+  find "$STAGING_DIR/ClassFlow.app/Contents/Frameworks" -type d -name "*.framework" -exec codesign --force --sign "$SIGNING_ID" {} + 2>/dev/null || true
+  find "$STAGING_DIR/ClassFlow.app/Contents/Frameworks" -type d -name "*.app" -exec codesign --force --sign "$SIGNING_ID" --entitlements "scripts/entitlements.mac.plist" {} + 2>/dev/null || true
+
+  codesign --force --options runtime --deep --sign "$SIGNING_ID" --entitlements "scripts/entitlements.mac.plist" "$STAGING_DIR/ClassFlow.app"
+
+  echo "[+] Verifying signature..."
+  codesign --verify --deep --strict --verbose=1 "$STAGING_DIR/ClassFlow.app" 2>&1 || true
 
   # 5. Create Applications symlink for drag-and-drop install
   echo "[+] Creating /Applications drag-and-drop link..."
@@ -54,8 +70,9 @@ build_dmg_for_arch() {
     -fs HFS+ \
     "$DMG_PATH"
 
-  # 7. Strip quarantine from generated DMG
+  # 7. Strip quarantine and sign the DMG disk image itself
   xattr -cr "$DMG_PATH" 2>/dev/null || true
+  codesign --force --sign "$SIGNING_ID" "$DMG_PATH" 2>/dev/null || true
 
   # 8. Copy to root out/ directory
   cp "$DMG_PATH" "$ROOT_DMG"
