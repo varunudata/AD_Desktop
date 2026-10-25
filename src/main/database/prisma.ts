@@ -21,16 +21,18 @@ export function getPrisma(): PrismaClient {
       'postgresql://postgres:postgres@localhost:5432/classflow?schema=public';
 
     try {
+      // In Electron desktop apps, connect directly to Neon compute (strip -pooler)
+      // to avoid PgBouncer idle TCP disconnects and connection pool starvation
+      if (dbUrl.includes('-pooler')) {
+        dbUrl = dbUrl.replace('-pooler', '');
+      }
+
       const urlObj = new URL(dbUrl);
-      // Give cloud databases (Neon) ample timeout for cold-starts/wake-ups
       if (!urlObj.searchParams.has('connect_timeout')) {
         urlObj.searchParams.set('connect_timeout', '30');
       }
       if (!urlObj.searchParams.has('pool_timeout')) {
         urlObj.searchParams.set('pool_timeout', '30');
-      }
-      if (dbUrl.includes('-pooler') && !urlObj.searchParams.has('pgbouncer')) {
-        urlObj.searchParams.set('pgbouncer', 'true');
       }
       dbUrl = urlObj.toString();
     } catch {
