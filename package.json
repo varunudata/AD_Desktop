@@ -1,0 +1,56 @@
+{
+  "name": "classflow",
+  "productName": "ClassFlow",
+  "version": "1.0.0",
+  "description": "ClassFlow — Smart Classroom & Resource Scheduling System",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "make:dmg": "bash scripts/create-dmg.sh",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "typescript",
+    "prisma",
+    "postgresql",
+    "scheduling",
+    "classroom-management",
+    "timetable"
+  ],
+  "author": "Apex Institute Engineering",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "dotenv": "^18.0.9",
+    "lucide-react": "^1.16.0",
+    "pg": "^8.13.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^8.0.1",
+    "@electron-forge/maker-zip": "^8.0.1",
+    "@electron-forge/plugin-vite": "^8.0.1",
+    "@electron/rebuild": "^4.2.1",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.11.11",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.4.11",
+    "prisma": "^6.19.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7"
+  }
+}

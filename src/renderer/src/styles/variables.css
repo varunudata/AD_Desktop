@@ -1,0 +1,69 @@
+:root {
+  /* Surfaces and Backgrounds */
+  --bg-app: #F5F7FB;
+  --bg-surface: #FFFFFF;
+  --bg-surface-muted: #F8FAFC;
+  --bg-hover: #F1F5F9;
+  --bg-active: #E2E8F0;
+
+  /* Typography Colors */
+  --text-primary: #172033;
+  --text-secondary: #5E6B82;
+  --text-muted: #8994A7;
+  --text-inverse: #FFFFFF;
+
+  /* Borders and Dividers */
+  --border-default: #E3E8F0;
+  --border-strong: #CDD6E3;
+  --border-focus: #3B82F6;
+
+  /* Primary Brand (Deep Blue) */
+  --primary-50: #EFF6FF;
+  --primary-100: #DBEAFE;
+  --primary-200: #BFDBFE;
+  --primary-500: #3B82F6;
+  --primary-600: #2563EB;
+  --primary-700: #1D4ED8;
+  --primary-900: #1E3A8A;
+
+  /* Semantic State Colors */
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --success-border: #BBF7D0;
+
+  --warning: #D97706;
+  --warning-bg: #FFFBEB;
+  --warning-border: #FDE68A;
+
+  --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+
+  --violet: #7C3AED;
+  --violet-bg: #F5F3FF;
+  --violet-border: #DDD6FE;
+
+  --cyan: #0891B2;
+  --cyan-bg: #ECFEFF;
+  --cyan-border: #A5F3FC;
+
+  /* Layout and Geometry */
+  --sidebar-width: 250px;
+  --topbar-height: 86px;
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-soft: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-popover: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+  /* Transitions */
+  --transition-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}

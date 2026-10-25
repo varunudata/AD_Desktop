@@ -1,0 +1,92 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Classroom {
+  id        String     @id @default(uuid())
+  code      String     @unique
+  name      String
+  building  String
+  capacity  Int
+  roomType  String     @default("CLASSROOM") // LECTURE_HALL, LABORATORY, SEMINAR_ROOM, CLASSROOM, WORKSHOP
+  equipment String     @default("[]") // JSON string array of equipment names
+  isActive  Boolean    @default(true)
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  schedules Schedule[]
+
+  @@index([building])
+  @@index([roomType])
+  @@index([isActive])
+}
+
+model Faculty {
+  id           String     @id @default(uuid())
+  employeeCode String?    @unique
+  fullName     String
+  department   String
+  email        String?
+  phone        String?
+  designation  String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  schedules    Schedule[]
+
+  @@index([department])
+  @@index([isActive])
+}
+
+model Subject {
+  id                     String     @id @default(uuid())
+  code                   String     @unique
+  name                   String
+  department             String
+  semester               String?
+  defaultExpectedStudents Int?
+  requiredEquipment      String     @default("[]") // JSON string array of required equipment
+  isActive               Boolean    @default(true)
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  schedules              Schedule[]
+
+  @@index([department])
+  @@index([semester])
+  @@index([isActive])
+}
+
+model Schedule {
+  id               String    @id @default(uuid())
+  subjectId        String
+  facultyId        String
+  classroomId      String
+  dayOfWeek        String    // MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+  startTime        String    // HH:mm (24-hour format)
+  endTime          String    // HH:mm (24-hour format)
+  expectedStudents Int
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  subject          Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  faculty          Faculty   @relation(fields: [facultyId], references: [id], onDelete: Restrict)
+  classroom        Classroom @relation(fields: [classroomId], references: [id], onDelete: Restrict)
+
+  @@index([classroomId, dayOfWeek])
+  @@index([facultyId, dayOfWeek])
+  @@index([subjectId])
+  @@index([dayOfWeek])
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   // Serialized value or string
+  updatedAt DateTime @updatedAt
+}
